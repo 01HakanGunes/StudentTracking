@@ -61,9 +61,9 @@ namespace API.Data
 			);
 
 			modelBuilder.Entity<Student>().HasData(
-				new Student { Id = 1, Number = 10, DepartmentId = 3 },
-				new Student { Id = 2, Number = 20, DepartmentId = 2 },
-				new Student { Id = 3, Number = 30, DepartmentId = 1 }
+				new Student { Id = 1, Name = "Han Gora", Number = 10, DepartmentId = 3 },
+				new Student { Id = 2, Name = "Memedov", Number = 20, DepartmentId = 2 },
+				new Student { Id = 3, Name = "Challenger", Number = 30, DepartmentId = 1 }
 			);
 
 			modelBuilder.Entity<Course>().HasData(
