@@ -103,3 +103,4 @@
 /home/hakan/Documents/Projects/StudentTracking/API/obj/Debug/net8.0/API.pdb
 /home/hakan/Documents/Projects/StudentTracking/API/obj/Debug/net8.0/API.genruntimeconfig.cache
 /home/hakan/Documents/Projects/StudentTracking/API/obj/Debug/net8.0/ref/API.dll
+/home/hakan/Documents/Projects/StudentTracking/API/obj/Debug/net8.0/API.sourcelink.json

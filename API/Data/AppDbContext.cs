@@ -53,7 +53,13 @@ namespace API.Data
 				);
 
 
-			// Initialize data
+			// Seed initial data
+			modelBuilder.Entity<Department>().HasData(
+				new Department { Id = 1, Name = "Computer Science", Description = "Crazy stuff", Quota = 10 },
+				new Department { Id = 2, Name = "History", Description = "Time traveller", Quota = 20 },
+				new Department { Id = 3, Name = "Mechanical Engineering", Description = "Be bald", Quota = 30 }
+			);
+
 			modelBuilder.Entity<Student>().HasData(
 				new Student { Id = 1, Number = 10, DepartmentId = 3 },
 				new Student { Id = 2, Number = 20, DepartmentId = 2 },
@@ -64,12 +70,6 @@ namespace API.Data
 				new Course { Id = 1, Name = "Ceng100", Description = "Really cool class 1", Instructor = "Mehmet", Quota = 10, DepartmentId = 1 },
 				new Course { Id = 2, Name = "Ceng200", Description = "Really cool class 2", Instructor = "Ahmet", Quota = 20, DepartmentId = 2 },
 				new Course { Id = 3, Name = "Ceng300", Description = "Really cool class 3", Instructor = "John", Quota = 30, DepartmentId = 3 }
-			);
-
-			modelBuilder.Entity<Department>().HasData(
-				new Department { Id = 1, Name = "Computer Science", Description = "Crazy stuff", Quota = 10 },
-				new Department { Id = 2, Name = "History", Description = "Time traveller", Quota = 20 },
-				new Department { Id = 3, Name = "Mechanical Engineering", Description = "Be bald", Quota = 30 }
 			);
 
 			modelBuilder.Entity<Grade>().HasData(
