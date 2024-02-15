@@ -1,4 +1,5 @@
 using API.Models;
+using API.Models.DTO;
 using API.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +49,7 @@ namespace API.Controller
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult AddDepartment(Department newDepartment)
+		public ActionResult AddDepartment(DepartmentDTO newDepartment)
 		{
 			if (newDepartment == null || newDepartment.Id > 0)
 			{
@@ -62,7 +63,15 @@ namespace API.Controller
 				return BadRequest(ModelState);
 			}
 
-			repo.Add(newDepartment);
+			Department model = new()
+			{
+				Id = newDepartment.Id,
+				Name = newDepartment.Name,
+				Description = newDepartment.Description,
+				Quota = newDepartment.Quota
+			};
+
+			repo.Add(model);
 			_unitOfWork.Save();
 
 			return Created();

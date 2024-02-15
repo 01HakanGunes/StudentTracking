@@ -1,4 +1,5 @@
 using API.Models;
+using API.Models.DTO;
 using API.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,14 +49,24 @@ namespace API.Controller
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult AddGrade(Grade newGrade)
+		public ActionResult AddGrade(GradeDTO newGrade)
 		{
 			if (newGrade == null || newGrade.Id > 0)
 			{
 				return BadRequest(newGrade);
 			}
 
-			repo.Add(newGrade);
+			Grade model = new()
+			{
+				Id = newGrade.Id,
+				Midterm = newGrade.Midterm,
+				Final = newGrade.Final,
+				Homework = newGrade.Homework,
+				StudentId = newGrade.StudentId,
+				CourseId = newGrade.CourseId
+			};
+
+			repo.Add(model);
 			_unitOfWork.Save();
 
 			return Created();

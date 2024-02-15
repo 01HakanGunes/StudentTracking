@@ -1,4 +1,5 @@
 using API.Models;
+using API.Models.DTO;
 using API.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +49,7 @@ namespace API.Controller
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult AddStudent(Student newStudent)
+		public ActionResult AddStudent(StudentDTO newStudent)
 		{
 			if (newStudent == null || newStudent.Id > 0)
 			{
@@ -62,7 +63,15 @@ namespace API.Controller
 				return BadRequest(ModelState);
 			}
 
-			repo.Add(newStudent);
+			Student model = new()
+			{
+				Id = newStudent.Id,
+				Name = newStudent.Name,
+				Number = newStudent.Number,
+				DepartmentId = newStudent.DepartmentId
+			};
+
+			repo.Add(model);
 			_unitOfWork.Save();
 
 			return Created();

@@ -1,4 +1,5 @@
 using API.Models;
+using API.Models.DTO;
 using API.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +49,7 @@ namespace API.Controller
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult AddCourse(Course newCourse)
+		public ActionResult AddCourse(CourseDTO newCourse)
 		{
 			if (newCourse == null || newCourse.Id > 0)
 			{
@@ -62,7 +63,18 @@ namespace API.Controller
 				return BadRequest(ModelState);
 			}
 
-			repo.Add(newCourse);
+			// Convert DTO to model
+			Course model = new()
+			{
+				Id = newCourse.Id,
+				Name = newCourse.Name,
+				Description = newCourse.Description,
+				Instructor = newCourse.Instructor,
+				Quota = newCourse.Quota,
+				DepartmentId = newCourse.DepartmentId
+			};
+
+			repo.Add(model);
 			_unitOfWork.Save();
 
 			return Created();
@@ -90,6 +102,12 @@ namespace API.Controller
 			_unitOfWork.Save();
 
 			return NoContent();
+		}
+
+		// Add an Endpoint to add students to a course for many to many relation between them
+		public ActionResult AddStudentToCourse(int courseId, int studentId)
+		{
+			return Ok();
 		}
 	}
 }
