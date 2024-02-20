@@ -6,63 +6,60 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controller
 {
 	[ApiController]
-	[Route("api/grade")]
-	public class GradeController : ControllerBase
+	[Route("api/instructor")]
+	public class InstructorController : ControllerBase
 	{
 		private readonly IUnitOfWork _unitOfWork;
 
-		public GradeController(IUnitOfWork unitOfWork)
+		public InstructorController(IUnitOfWork unitOfWork)
 		{
 			_unitOfWork = unitOfWork;
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public async Task<ActionResult<IEnumerable<Grade>>> GetGrades()
+		public async Task<ActionResult<IEnumerable<Instructor>>> GetInstructors()
 		{
-			return Ok(await _unitOfWork.gradeRepo.GetAllAsync());
+			return Ok(await _unitOfWork.instructorRepo.GetAllAsync());
 		}
 
-		[HttpGet("{id}", Name = "GetGrade")]
+		[HttpGet("{id}", Name = "GetInstructor")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult<Grade>> GetGrade(int id)
+		public async Task<ActionResult<Instructor>> GetInstructor(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
 
-			Grade? Grade = await _unitOfWork.gradeRepo.GetAsync(s => s.Id == id);
+			Instructor? instructor = await _unitOfWork.instructorRepo.GetAsync(i => i.Id == id);
 
-			if (Grade == null)
+			if (instructor == null)
 			{
 				return NotFound();
 			}
 
-			return Ok(Grade);
+			return Ok(instructor);
 		}
 
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult> AddGrade(GradeDTO newGrade)
+		public async Task<ActionResult> AddInstructor(InstructorDTO newInstructor)
 		{
-			if (newGrade == null || newGrade.Id > 0)
+			if (newInstructor == null || newInstructor.Name == null || newInstructor.Id > 0)
 			{
-				return BadRequest(newGrade);
+				return BadRequest(newInstructor);
 			}
 
-			Grade model = new(newGrade.StudentId, newGrade.CourseId)
+			Instructor model = new(newInstructor.Name)
 			{
-				Id = newGrade.Id,
-				Midterm = newGrade.Midterm,
-				Final = newGrade.Final,
-				Homework = newGrade.Homework
+				Id = newInstructor.Id
 			};
 
-			_unitOfWork.gradeRepo.Add(model);
+			_unitOfWork.instructorRepo.Add(model);
 			await _unitOfWork.SaveAsync();
 
 			return Created();
@@ -72,21 +69,21 @@ namespace API.Controller
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<ActionResult> RemoveGrade(int id)
+		public async Task<ActionResult> RemoveInstructor(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
 
-			Grade? Grade = await _unitOfWork.gradeRepo.GetAsync(s => s.Id == id);
+			Instructor? instructor = await _unitOfWork.instructorRepo.GetAsync(i => i.Id == id);
 
-			if (Grade == null)
+			if (instructor == null)
 			{
 				return NotFound();
 			}
 
-			_unitOfWork.gradeRepo.Remove(Grade);
+			_unitOfWork.instructorRepo.Remove(instructor);
 			await _unitOfWork.SaveAsync();
 
 			return NoContent();
@@ -96,24 +93,22 @@ namespace API.Controller
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult> UpdateGrade(int id, [FromBody] GradeDTO gradeDTO)
+		public async Task<ActionResult> UpdateInstructor(int id, [FromBody] InstructorDTO instructorDTO)
 		{
-			if (gradeDTO == null)
+			if (instructorDTO == null || instructorDTO.Name == null)
 			{
 				return NotFound();
 			}
 
-			Grade model = new(gradeDTO.StudentId, gradeDTO.CourseId)
+			Instructor model = new(instructorDTO.Name)
 			{
 				Id = id,
-				Midterm = gradeDTO.Midterm,
-				Final = gradeDTO.Final,
-				Homework = gradeDTO.Homework
 			};
 
-			_unitOfWork.gradeRepo.Update(model);
+			_unitOfWork.instructorRepo.Update(model);
 			await _unitOfWork.SaveAsync();
 			return Ok();
 		}
+
 	}
 }

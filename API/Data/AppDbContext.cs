@@ -52,30 +52,45 @@ namespace API.Data
 					j => j.HasOne<Student>().WithMany().HasForeignKey("StudentId")
 				);
 
+			// many courses to many instructors
+			modelBuilder.Entity<Instructor>()
+				.HasMany(i => i.Courses)
+				.WithMany(c => c.Instructors)
+				.UsingEntity<Dictionary<string, object>>(
+					"InstructorCourses",
+					j => j.HasOne<Course>().WithMany().HasForeignKey("CourseId"),
+					j => j.HasOne<Instructor>().WithMany().HasForeignKey("InstructorId")
+				);
 
 			// Seed initial data
 			modelBuilder.Entity<Department>().HasData(
-				new Department { Id = 1, Name = "Computer Science", Description = "Crazy stuff", Quota = 10 },
-				new Department { Id = 2, Name = "History", Description = "Time traveller", Quota = 20 },
-				new Department { Id = 3, Name = "Mechanical Engineering", Description = "Be bald", Quota = 30 }
+				new Department(name: "Habibi Science", quota: 10) { Id = 1, Description = "Crazy stuff" },
+				new Department(name: "History", quota: 10) { Id = 2, Description = "Time traveller" },
+				new Department(name: "Physics", quota: 10) { Id = 3, Description = "Be bald" }
 			);
 
 			modelBuilder.Entity<Student>().HasData(
-				new Student { Id = 1, Name = "Han Gora", Number = 10, DepartmentId = 3 },
-				new Student { Id = 2, Name = "Memedov", Number = 20, DepartmentId = 2 },
-				new Student { Id = 3, Name = "Challenger", Number = 30, DepartmentId = 1 }
+				new Student(name: "Kontishot The Dreamer", number: 10, departmentId: 1) { Id = 1, Number = 10 },
+				new Student(name: "Darkness Rises", number: 15, departmentId: 2) { Id = 2, Number = 20 },
+				new Student(name: "Speed of Light", number: 20, departmentId: 3) { Id = 3, Number = 30 }
+			);
+
+			modelBuilder.Entity<Instructor>().HasData(
+				new Instructor(name: "Professor Gopkins") { Id = 1 },
+				new Instructor(name: "Kül Yutmaz") { Id = 2 },
+				new Instructor(name: "Albert Einstein") { Id = 3 }
 			);
 
 			modelBuilder.Entity<Course>().HasData(
-				new Course { Id = 1, Name = "Ceng100", Description = "Really cool class 1", Instructor = "Mehmet", Quota = 10, DepartmentId = 1 },
-				new Course { Id = 2, Name = "Ceng200", Description = "Really cool class 2", Instructor = "Ahmet", Quota = 20, DepartmentId = 2 },
-				new Course { Id = 3, Name = "Ceng300", Description = "Really cool class 3", Instructor = "John", Quota = 30, DepartmentId = 3 }
+				new Course(code: 100, name: "Introduction to Teleportation", quota: 10, departmentId: 1) { Id = 1, Description = "Really cool class 1" },
+				new Course(code: 101, name: "How to Touch Grass 101", quota: 10, departmentId: 2) { Id = 2, Description = "Really cool class 2" },
+				new Course(code: 102, name: "Science of University Life", quota: 10, departmentId: 3) { Id = 3, Description = "Really cool class 3" }
 			);
 
 			modelBuilder.Entity<Grade>().HasData(
-				new Grade { Id = 1, Midterm = 20, Final = 30, Homework = 40, StudentId = 1, CourseId = 1 },
-				new Grade { Id = 2, Midterm = 52, Final = 20, Homework = 50, StudentId = 2, CourseId = 2 },
-				new Grade { Id = 3, Midterm = 30, Final = 99, Homework = 60, StudentId = 3, CourseId = 3 }
+				new Grade(studentId: 1, courseId: 1) { Id = 1, Midterm = 20, Final = 30, Homework = 40 },
+				new Grade(studentId: 2, courseId: 2) { Id = 2, Midterm = 52, Final = 20, Homework = 50 },
+				new Grade(studentId: 3, courseId: 3) { Id = 3, Midterm = 30, Final = 99, Homework = 60 }
 			);
 		}
 	}

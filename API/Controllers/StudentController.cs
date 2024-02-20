@@ -10,33 +10,31 @@ namespace API.Controller
 	public class StudentController : ControllerBase
 	{
 		private readonly IUnitOfWork _unitOfWork;
-		private readonly IStudentRepository repo;
 
 		public StudentController(IUnitOfWork unitOfWork)
 		{
 			_unitOfWork = unitOfWork;
-			repo = _unitOfWork.studentRepo;
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public ActionResult<IEnumerable<Student>> GetStudents()
+		public async Task<ActionResult<IEnumerable<Student>>> GetStudents()
 		{
-			return Ok(repo.GetAll());
+			return Ok(await _unitOfWork.studentRepo.GetAllAsync());
 		}
 
 		[HttpGet("{id}", Name = "GetStudent")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult<Student> GetStudent(int id)
+		public async Task<ActionResult<Student>> GetStudent(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
 
-			Student? student = repo.Get(s => s.Id == id);
+			Student? student = await _unitOfWork.studentRepo.GetAsync(s => s.Id == id);
 
 			if (student == null)
 			{
@@ -49,30 +47,27 @@ namespace API.Controller
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult AddStudent(StudentDTO newStudent)
+		public async Task<ActionResult> AddStudent(StudentDTO newStudent)
 		{
-			if (newStudent == null || newStudent.Id > 0)
+			if (newStudent == null || newStudent.Name == null || newStudent.Id > 0)
 			{
 				return BadRequest(newStudent);
 			}
 
-			if (repo.Get(s => s.Number == newStudent.Number) != null)
+			if (await _unitOfWork.studentRepo.GetAsync(s => s.Number == newStudent.Number) != null)
 			{
 				ModelState.AddModelError("", "Student already exists!");
 
 				return BadRequest(ModelState);
 			}
 
-			Student model = new()
+			Student model = new(newStudent.Name, newStudent.Number, newStudent.DepartmentId)
 			{
-				Id = newStudent.Id,
-				Name = newStudent.Name,
-				Number = newStudent.Number,
-				DepartmentId = newStudent.DepartmentId
+				Id = newStudent.Id
 			};
 
-			repo.Add(model);
-			_unitOfWork.Save();
+			_unitOfWork.studentRepo.Add(model);
+			await _unitOfWork.SaveAsync();
 
 			return Created();
 		}
@@ -81,24 +76,45 @@ namespace API.Controller
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public ActionResult RemoveStudent(int id)
+		public async Task<ActionResult> RemoveStudent(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
 
-			Student? student = repo.Get(s => s.Id == id);
+			Student? student = await _unitOfWork.studentRepo.GetAsync(s => s.Id == id);
 
 			if (student == null)
 			{
 				return NotFound();
 			}
 
-			repo.Remove(student);
-			_unitOfWork.Save();
+			_unitOfWork.studentRepo.Remove(student);
+			await _unitOfWork.SaveAsync();
 
 			return NoContent();
+		}
+
+		[HttpPut]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<ActionResult> UpdateStudent(int id, [FromBody] StudentDTO studentDTO)
+		{
+			if (studentDTO == null || studentDTO.Name == null)
+			{
+				return NotFound();
+			}
+
+			Student model = new(studentDTO.Name, studentDTO.Number, studentDTO.DepartmentId)
+			{
+				Id = id,
+			};
+
+			_unitOfWork.studentRepo.Update(model);
+			await _unitOfWork.SaveAsync();
+			return Ok();
 		}
 	}
 }

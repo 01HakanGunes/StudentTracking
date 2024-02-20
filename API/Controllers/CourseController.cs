@@ -10,72 +10,67 @@ namespace API.Controller
 	public class CourseController : ControllerBase
 	{
 		private readonly IUnitOfWork _unitOfWork;
-		private readonly ICourseRepository repo;
 
 		public CourseController(IUnitOfWork unitOfWork)
 		{
 			_unitOfWork = unitOfWork;
-			repo = _unitOfWork.courseRepo;
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public ActionResult<IEnumerable<Course>> GetCourses()
+		public async Task<ActionResult<IEnumerable<Course>>> GetCourses()
 		{
-			return Ok(repo.GetAll());
+			IEnumerable<Course> courses = await _unitOfWork.courseRepo.GetAllAsync();
+
+			return Ok(courses);
 		}
 
-		[HttpGet("{id}", Name = "GetCourse")]
+		[HttpGet("{id}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult<Course> GetCourse(int id)
+		public async Task<ActionResult<Course>> GetCourse(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
 
-			Course? Course = repo.Get(s => s.Id == id);
+			Course? course = await _unitOfWork.courseRepo.GetAsync(c => c.Id == id);
 
-			if (Course == null)
+			if (course == null)
 			{
 				return NotFound();
 			}
 
-			return Ok(Course);
+			return Ok(course);
 		}
 
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult AddCourse(CourseDTO newCourse)
+		public async Task<ActionResult> AddCourse(CourseDTO courseDTO)
 		{
-			if (newCourse == null || newCourse.Id > 0)
+			if (courseDTO == null || courseDTO.Name == null || courseDTO.Description == null || courseDTO.Instructor == null || courseDTO.Id > 0)
 			{
-				return BadRequest(newCourse);
+				return BadRequest(courseDTO);
 			}
 
-			if (repo.Get(s => s.Name == newCourse.Name) != null)
+			if (await _unitOfWork.courseRepo.GetAsync(c => c.Name == courseDTO.Name) != null)
 			{
 				ModelState.AddModelError("", "Course already exists!");
-
 				return BadRequest(ModelState);
 			}
 
 			// Convert DTO to model
-			Course model = new()
+			Course model = new(courseDTO.Code, courseDTO.Name, courseDTO.Quota, courseDTO.DepartmentId)
 			{
-				Id = newCourse.Id,
-				Name = newCourse.Name,
-				Description = newCourse.Description,
-				Instructor = newCourse.Instructor,
-				Quota = newCourse.Quota,
-				DepartmentId = newCourse.DepartmentId
+				Id = courseDTO.Id,
+				Description = courseDTO.Description,
 			};
 
-			repo.Add(model);
-			_unitOfWork.Save();
+			_unitOfWork.courseRepo.Add(model);
+			await _unitOfWork.SaveAsync();
 
 			return Created();
 		}
@@ -84,29 +79,72 @@ namespace API.Controller
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public ActionResult RemoveCourse(int id)
+		public async Task<ActionResult> RemoveCourse(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
 
-			Course? Course = repo.Get(s => s.Id == id);
+			Course? Course = await _unitOfWork.courseRepo.GetAsync(c => c.Id == id);
 
 			if (Course == null)
 			{
 				return NotFound();
 			}
 
-			repo.Remove(Course);
-			_unitOfWork.Save();
+			_unitOfWork.courseRepo.Remove(Course);
+			await _unitOfWork.SaveAsync();
 
 			return NoContent();
 		}
 
-		// Add an Endpoint to add students to a course for many to many relation between them
-		public ActionResult AddStudentToCourse(int courseId, int studentId)
+		// Add an Endpoint to add students to a course for many to many relation between them.
+		[HttpPost("{courseId}/{studentId}")]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		public async Task<ActionResult> AddStudentToCourse(int courseId, int studentId)
 		{
+			Course? course = await _unitOfWork.courseRepo.GetAsync(c => c.Id == courseId);
+			if (course == null)
+			{
+				return NotFound("Course not found!");
+			}
+
+			Student? student = await _unitOfWork.studentRepo.GetAsync(s => s.Id == studentId);
+			if (student == null)
+			{
+				return NotFound("Student not found!");
+			}
+
+
+			course.Students.Add(student);
+			student.EnrolledCourses.Add(course);
+			await _unitOfWork.SaveAsync();
+
+			return Created();
+		}
+
+		[HttpPut]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<ActionResult> UpdateCourse(int id, [FromBody] CourseDTO courseDTO)
+		{
+			if (courseDTO == null || courseDTO.Name == null || courseDTO.Description == null || courseDTO.Instructor == null)
+			{
+				return NotFound();
+			}
+
+			Course model = new(courseDTO.Code, courseDTO.Name, courseDTO.Quota, courseDTO.DepartmentId)
+			{
+				Id = id,
+				Description = courseDTO.Description
+			};
+
+			_unitOfWork.courseRepo.Update(model);
+			await _unitOfWork.SaveAsync();
 			return Ok();
 		}
 	}

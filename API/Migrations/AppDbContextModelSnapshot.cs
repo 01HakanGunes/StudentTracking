@@ -29,16 +29,18 @@ namespace API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Code")
+                        .HasColumnType("integer");
+
                     b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Instructor")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quota")
@@ -54,29 +56,29 @@ namespace API.Migrations
                         new
                         {
                             Id = 1,
+                            Code = 100,
                             DepartmentId = 1,
                             Description = "Really cool class 1",
-                            Instructor = "Mehmet",
-                            Name = "Ceng100",
+                            Name = "Introduction to Teleportation",
                             Quota = 10
                         },
                         new
                         {
                             Id = 2,
+                            Code = 101,
                             DepartmentId = 2,
                             Description = "Really cool class 2",
-                            Instructor = "Ahmet",
-                            Name = "Ceng200",
-                            Quota = 20
+                            Name = "How to Touch Grass 101",
+                            Quota = 10
                         },
                         new
                         {
                             Id = 3,
+                            Code = 102,
                             DepartmentId = 3,
                             Description = "Really cool class 3",
-                            Instructor = "John",
-                            Name = "Ceng300",
-                            Quota = 30
+                            Name = "Science of University Life",
+                            Quota = 10
                         });
                 });
 
@@ -89,9 +91,11 @@ namespace API.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quota")
@@ -106,7 +110,7 @@ namespace API.Migrations
                         {
                             Id = 1,
                             Description = "Crazy stuff",
-                            Name = "Computer Science",
+                            Name = "Habibi Science",
                             Quota = 10
                         },
                         new
@@ -114,14 +118,14 @@ namespace API.Migrations
                             Id = 2,
                             Description = "Time traveller",
                             Name = "History",
-                            Quota = 20
+                            Quota = 10
                         },
                         new
                         {
                             Id = 3,
                             Description = "Be bald",
-                            Name = "Mechanical Engineering",
-                            Quota = 30
+                            Name = "Physics",
+                            Quota = 10
                         });
                 });
 
@@ -186,6 +190,40 @@ namespace API.Migrations
                         });
                 });
 
+            modelBuilder.Entity("API.Models.Instructor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Instructor");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Professor Gopkins"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Kül Yutmaz"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Albert Einstein"
+                        });
+                });
+
             modelBuilder.Entity("API.Models.Student", b =>
                 {
                     b.Property<int>("Id")
@@ -198,6 +236,7 @@ namespace API.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Number")
@@ -213,24 +252,39 @@ namespace API.Migrations
                         new
                         {
                             Id = 1,
-                            DepartmentId = 3,
-                            Name = "Han Gora",
+                            DepartmentId = 1,
+                            Name = "Kontishot The Dreamer",
                             Number = 10
                         },
                         new
                         {
                             Id = 2,
                             DepartmentId = 2,
-                            Name = "Memedov",
+                            Name = "Darkness Rises",
                             Number = 20
                         },
                         new
                         {
                             Id = 3,
-                            DepartmentId = 1,
-                            Name = "Challenger",
+                            DepartmentId = 3,
+                            Name = "Speed of Light",
                             Number = 30
                         });
+                });
+
+            modelBuilder.Entity("InstructorCourses", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("InstructorId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CourseId", "InstructorId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.ToTable("InstructorCourses");
                 });
 
             modelBuilder.Entity("StudentCourses", b =>
@@ -287,6 +341,21 @@ namespace API.Migrations
                         .IsRequired();
 
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("InstructorCourses", b =>
+                {
+                    b.HasOne("API.Models.Course", null)
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Models.Instructor", null)
+                        .WithMany()
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("StudentCourses", b =>

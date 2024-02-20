@@ -6,7 +6,8 @@ namespace API.Repository.IRepository
 		IDepartmentRepository departmentRepo { get; }
 		IGradeRepository gradeRepo { get; }
 		IStudentRepository studentRepo { get; }
+		IInstructorRepository instructorRepo { get; }
 
-		void Save();
+		Task SaveAsync();
 	}
 }

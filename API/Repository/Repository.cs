@@ -19,19 +19,31 @@ namespace API.Repository
 			_dbSet.Add(entity);
 		}
 
-		public T? Get(Expression<Func<T, bool>> filter)
+		public async Task<T> GetAsync(Expression<Func<T, bool>> filter)
 		{
-			return _dbSet.Where(filter).FirstOrDefault();
+			T? result = await _dbSet.Where(filter).FirstOrDefaultAsync();
+
+			if (result == null)
+			{
+				throw new InvalidOperationException("No matching element found.");
+			}
+
+			return result;
 		}
 
-		public IEnumerable<T> GetAll()
+		public async Task<IEnumerable<T>> GetAllAsync()
 		{
-			return _dbSet.ToList();
+			return await _dbSet.ToListAsync();
 		}
 
 		public void Remove(T entity)
 		{
 			_dbSet.Remove(entity);
+		}
+
+		public void Update(T entity)
+		{
+			_dbSet.Update(entity);
 		}
 	}
 }

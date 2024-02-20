@@ -10,33 +10,31 @@ namespace API.Controller
 	public class DepartmentController : ControllerBase
 	{
 		private readonly IUnitOfWork _unitOfWork;
-		private readonly IDepartmentRepository repo;
 
 		public DepartmentController(IUnitOfWork unitOfWork)
 		{
 			_unitOfWork = unitOfWork;
-			repo = _unitOfWork.departmentRepo;
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		public ActionResult<IEnumerable<Department>> GetDepartments()
+		public async Task<ActionResult<IEnumerable<Department>>> GetDepartments()
 		{
-			return Ok(repo.GetAll());
+			return Ok(await _unitOfWork.departmentRepo.GetAllAsync());
 		}
 
 		[HttpGet("{id}", Name = "GetDepartment")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult<Department> GetDepartment(int id)
+		public async Task<ActionResult<Department>> GetDepartment(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
 
-			Department? Department = repo.Get(s => s.Id == id);
+			Department? Department = await _unitOfWork.departmentRepo.GetAsync(s => s.Id == id);
 
 			if (Department == null)
 			{
@@ -49,30 +47,28 @@ namespace API.Controller
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult AddDepartment(DepartmentDTO newDepartment)
+		public async Task<ActionResult> AddDepartment(DepartmentDTO departmentDTO)
 		{
-			if (newDepartment == null || newDepartment.Id > 0)
+			if (departmentDTO == null || departmentDTO.Name == null || departmentDTO.Description == null || departmentDTO.Id > 0)
 			{
-				return BadRequest(newDepartment);
+				return BadRequest(departmentDTO);
 			}
 
-			if (repo.Get(s => s.Name == newDepartment.Name) != null)
+			if (await _unitOfWork.departmentRepo.GetAsync(s => s.Name == departmentDTO.Name) != null)
 			{
 				ModelState.AddModelError("", "Department already exists!");
 
 				return BadRequest(ModelState);
 			}
 
-			Department model = new()
+			Department model = new(departmentDTO.Name, departmentDTO.Quota)
 			{
-				Id = newDepartment.Id,
-				Name = newDepartment.Name,
-				Description = newDepartment.Description,
-				Quota = newDepartment.Quota
+				Id = departmentDTO.Id,
+				Description = departmentDTO.Description
 			};
 
-			repo.Add(model);
-			_unitOfWork.Save();
+			_unitOfWork.departmentRepo.Add(model);
+			await _unitOfWork.SaveAsync();
 
 			return Created();
 		}
@@ -81,24 +77,47 @@ namespace API.Controller
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public ActionResult RemoveDepartment(int id)
+		public async Task<ActionResult> RemoveDepartment(int id)
 		{
 			if (id == 0)
 			{
 				return BadRequest();
 			}
 
-			Department? Department = repo.Get(s => s.Id == id);
+			Department? Department = await _unitOfWork.departmentRepo.GetAsync(s => s.Id == id);
 
 			if (Department == null)
 			{
 				return NotFound();
 			}
 
-			repo.Remove(Department);
-			_unitOfWork.Save();
+			_unitOfWork.departmentRepo.Remove(Department);
+			await _unitOfWork.SaveAsync();
 
 			return NoContent();
 		}
+
+		[HttpPut]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<ActionResult> UpdateDepartment(int id, [FromBody] DepartmentDTO departmentDTO)
+		{
+			if (departmentDTO == null || departmentDTO.Name == null || departmentDTO.Description == null)
+			{
+				return NotFound();
+			}
+
+			Department model = new(departmentDTO.Name, departmentDTO.Quota)
+			{
+				Id = id,
+				Description = departmentDTO.Description
+			};
+
+			_unitOfWork.departmentRepo.Update(model);
+			await _unitOfWork.SaveAsync();
+			return Ok();
+		}
+
 	}
 }

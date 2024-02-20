@@ -10,6 +10,7 @@ namespace API.Repository
 		public IDepartmentRepository departmentRepo { get; private set; }
 		public IGradeRepository gradeRepo { get; private set; }
 		public IStudentRepository studentRepo { get; private set; }
+		public IInstructorRepository instructorRepo { get; private set; }
 
 		public UnitOfWork(AppDbContext db)
 		{
@@ -18,11 +19,12 @@ namespace API.Repository
 			departmentRepo = new DepartmentRepository(db);
 			gradeRepo = new GradeRepository(db);
 			studentRepo = new StudentRepository(db);
+			instructorRepo = new InstructorRepository(db);
 		}
 
-		public void Save()
+		public async Task SaveAsync()
 		{
-			_db.SaveChanges();
+			await _db.SaveChangesAsync();
 		}
 	}
 }

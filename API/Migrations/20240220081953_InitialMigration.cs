@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class FirstMigration : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,8 +19,8 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     Quota = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -29,14 +29,27 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Instructor",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Instructor", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Courses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    Instructor = table.Column<string>(type: "text", nullable: true),
+                    Code = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     Quota = table.Column<int>(type: "integer", nullable: false),
                     DepartmentId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -57,6 +70,7 @@ namespace API.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Number = table.Column<int>(type: "integer", nullable: false),
                     DepartmentId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -67,6 +81,30 @@ namespace API.Migrations
                         name: "FK_Students_Departments_DepartmentId",
                         column: x => x.DepartmentId,
                         principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InstructorCourses",
+                columns: table => new
+                {
+                    CourseId = table.Column<int>(type: "integer", nullable: false),
+                    InstructorId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InstructorCourses", x => new { x.CourseId, x.InstructorId });
+                    table.ForeignKey(
+                        name: "FK_InstructorCourses_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InstructorCourses_Instructor_InstructorId",
+                        column: x => x.InstructorId,
+                        principalTable: "Instructor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -129,29 +167,39 @@ namespace API.Migrations
                 columns: new[] { "Id", "Description", "Name", "Quota" },
                 values: new object[,]
                 {
-                    { 1, "Crazy stuff", "Computer Science", 10 },
-                    { 2, "Time traveller", "History", 20 },
-                    { 3, "Be bald", "Mechanical Engineering", 30 }
+                    { 1, "Crazy stuff", "Habibi Science", 10 },
+                    { 2, "Time traveller", "History", 10 },
+                    { 3, "Be bald", "Physics", 10 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Instructor",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Professor Gopkins" },
+                    { 2, "Kül Yutmaz" },
+                    { 3, "Albert Einstein" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Courses",
-                columns: new[] { "Id", "DepartmentId", "Description", "Instructor", "Name", "Quota" },
+                columns: new[] { "Id", "Code", "DepartmentId", "Description", "Name", "Quota" },
                 values: new object[,]
                 {
-                    { 1, 1, "Really cool class 1", "Mehmet", "Ceng100", 10 },
-                    { 2, 2, "Really cool class 2", "Ahmet", "Ceng200", 20 },
-                    { 3, 3, "Really cool class 3", "John", "Ceng300", 30 }
+                    { 1, 100, 1, "Really cool class 1", "Introduction to Teleportation", 10 },
+                    { 2, 101, 2, "Really cool class 2", "How to Touch Grass 101", 10 },
+                    { 3, 102, 3, "Really cool class 3", "Science of University Life", 10 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Students",
-                columns: new[] { "Id", "DepartmentId", "Number" },
+                columns: new[] { "Id", "DepartmentId", "Name", "Number" },
                 values: new object[,]
                 {
-                    { 1, 3, 10 },
-                    { 2, 2, 20 },
-                    { 3, 1, 30 }
+                    { 1, 1, "Kontishot The Dreamer", 10 },
+                    { 2, 2, "Darkness Rises", 20 },
+                    { 3, 3, "Speed of Light", 30 }
                 });
 
             migrationBuilder.InsertData(
@@ -180,6 +228,11 @@ namespace API.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InstructorCourses_InstructorId",
+                table: "InstructorCourses",
+                column: "InstructorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_StudentCourses_StudentId",
                 table: "StudentCourses",
                 column: "StudentId");
@@ -197,7 +250,13 @@ namespace API.Migrations
                 name: "Grades");
 
             migrationBuilder.DropTable(
+                name: "InstructorCourses");
+
+            migrationBuilder.DropTable(
                 name: "StudentCourses");
+
+            migrationBuilder.DropTable(
+                name: "Instructor");
 
             migrationBuilder.DropTable(
                 name: "Courses");
