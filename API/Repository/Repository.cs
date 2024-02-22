@@ -23,12 +23,7 @@ namespace API.Repository
 		{
 			T? result = await _dbSet.Where(filter).FirstOrDefaultAsync();
 
-			if (result == null)
-			{
-				throw new InvalidOperationException("No matching element found.");
-			}
-
-			return result;
+			return result!;
 		}
 
 		public async Task<IEnumerable<T>> GetAllAsync()

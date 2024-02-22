@@ -6,6 +6,5 @@ Todo: (Low to High Priority)
 - Do i need multiple projects?
 - Redis migration
 - Fluent api
+- Do not put attributes to the models instead put to DTOs.
 - Admin, Instructor(read, write all grade), Student(read single grade) authentication and authorization with DOT.NET Identity middleware.
-- Test and make sure table structure works with api.
-- Dereference of possibly null reference

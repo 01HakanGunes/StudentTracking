@@ -104,3 +104,12 @@
 /home/hakan/Documents/Projects/StudentTracking/API/obj/Debug/net8.0/API.genruntimeconfig.cache
 /home/hakan/Documents/Projects/StudentTracking/API/obj/Debug/net8.0/ref/API.dll
 /home/hakan/Documents/Projects/StudentTracking/API/obj/Debug/net8.0/API.sourcelink.json
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.dll
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
+/home/hakan/Documents/Projects/StudentTracking/API/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll

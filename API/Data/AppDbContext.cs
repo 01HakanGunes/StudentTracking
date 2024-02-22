@@ -1,9 +1,11 @@
 using API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
-	public class AppDbContext : DbContext
+	public class AppDbContext : IdentityDbContext<IdentityUser>
 	{
 		public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
 		{
@@ -16,6 +18,9 @@ namespace API.Data
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			// Added because of Identity?
+			base.OnModelCreating(modelBuilder);
+
 			// Configure entities for relationships for their corresponding tables
 
 			// one student to many grades

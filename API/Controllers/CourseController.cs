@@ -51,7 +51,7 @@ namespace API.Controller
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult> AddCourse(CourseDTO courseDTO)
 		{
-			if (courseDTO == null || courseDTO.Name == null || courseDTO.Description == null || courseDTO.Instructor == null || courseDTO.Id > 0)
+			if (courseDTO == null || courseDTO.Name == null || courseDTO.Description == null)
 			{
 				return BadRequest(courseDTO);
 			}
@@ -65,7 +65,7 @@ namespace API.Controller
 			// Convert DTO to model
 			Course model = new(courseDTO.Code, courseDTO.Name, courseDTO.Quota, courseDTO.DepartmentId)
 			{
-				Id = courseDTO.Id,
+				Id = 0,
 				Description = courseDTO.Description,
 			};
 
@@ -132,7 +132,7 @@ namespace API.Controller
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult> UpdateCourse(int id, [FromBody] CourseDTO courseDTO)
 		{
-			if (courseDTO == null || courseDTO.Name == null || courseDTO.Description == null || courseDTO.Instructor == null)
+			if (courseDTO == null || courseDTO.Name == null || courseDTO.Description == null)
 			{
 				return NotFound();
 			}
