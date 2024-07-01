@@ -11,6 +11,7 @@ namespace API.Data
 		{
 		}
 
+		// Each DbSet represents a table
 		public DbSet<Student> Students { get; set; }
 		public DbSet<Course> Courses { get; set; }
 		public DbSet<Department> Departments { get; set; }

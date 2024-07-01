@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using API.Models.DTO;
-using System.Threading.Tasks;
 
 namespace API.Controllers
 {

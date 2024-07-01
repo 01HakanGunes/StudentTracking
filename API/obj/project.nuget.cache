@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "mellcf19+MkQeAhUu5TIotWt9mNW23B/OZwx8BeNWJ3VMDAMnaavYferY6QI9ahzIqP7HYRwFVDyIK37S6W7sA==",
+  "dgSpecHash": "slu2FrZ32TImQHbLm7EwC5TOY/GhFHFdKQeszf1aWRoQvL0OqOH5tDxnj4ng7WfzDJ96uUJTwA9PJH3zNy7smA==",
   "success": true,
-  "projectFilePath": "/home/hakan/Documents/Projects/StudentTracking/API/API.csproj",
+  "projectFilePath": "/home/hakan/Documents/GithubClones/StudentTracking/API/API.csproj",
   "expectedPackageFiles": [
     "/home/hakan/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/home/hakan/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/8.0.0/microsoft.aspnetcore.authentication.jwtbearer.8.0.0.nupkg.sha512",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/hakan/Documents/Projects/StudentTracking/API/API.csproj": {}
+    "/home/hakan/Documents/GithubClones/StudentTracking/API/API.csproj": {}
   },
   "projects": {
-    "/home/hakan/Documents/Projects/StudentTracking/API/API.csproj": {
+    "/home/hakan/Documents/GithubClones/StudentTracking/API/API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/hakan/Documents/Projects/StudentTracking/API/API.csproj",
+        "projectUniqueName": "/home/hakan/Documents/GithubClones/StudentTracking/API/API.csproj",
         "projectName": "API",
-        "projectPath": "/home/hakan/Documents/Projects/StudentTracking/API/API.csproj",
+        "projectPath": "/home/hakan/Documents/GithubClones/StudentTracking/API/API.csproj",
         "packagesPath": "/home/hakan/.nuget/packages/",
-        "outputPath": "/home/hakan/Documents/Projects/StudentTracking/API/obj/",
+        "outputPath": "/home/hakan/Documents/GithubClones/StudentTracking/API/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/hakan/.nuget/NuGet/NuGet.Config"
@@ -94,7 +94,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.104/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
